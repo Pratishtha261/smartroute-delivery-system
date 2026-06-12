@@ -1,8 +1,5 @@
 const calculateHaversineDistance = require('./haversineDistance');
 
-/**
- * Priority Queue for A* algorithm
- */
 class PriorityQueue {
   constructor() {
     this.items = [];
@@ -38,23 +35,8 @@ class PriorityQueue {
   }
 }
 
-/**
- * A* Algorithm - Primary routing algorithm
- * Uses Haversine distance as heuristic function
- * Optimal for real-world geographic pathfinding
- */
 class AStarAlgorithm {
-  /**
-   * Find optimal path using A* algorithm
-   * f(n) = g(n) + h(n)
-   * g(n) = actual cost from start to node n
-   * h(n) = heuristic estimate from node n to goal (Haversine distance)
-   *
-   * @param {object} graph - Graph with nodes and adjacencyList
-   * @param {string} startId - Start node ID
-   * @param {string} goalId - Goal node ID
-   * @returns {object} Result with path, distance, time, nodes visited, performance metrics
-   */
+  
   static findPath(graph, startId, goalId) {
     const startTime = Date.now();
     const stats = {
@@ -66,9 +48,9 @@ class AStarAlgorithm {
 
     const openSet = new PriorityQueue();
     const closedSet = new Set();
-    const gScore = new Map(); // Actual cost from start to node
-    const fScore = new Map(); // g(n) + h(n)
-    const cameFrom = new Map(); // For path reconstruction
+    const gScore = new Map(); 
+    const fScore = new Map(); 
+    const cameFrom = new Map(); 
 
     const startNode = graph.nodes[startId];
     const goalNode = graph.nodes[goalId];
@@ -84,7 +66,6 @@ class AStarAlgorithm {
       };
     }
 
-    // Initialize
     gScore.set(startId, 0);
     const h = this.heuristic(startNode, goalNode);
     fScore.set(startId, h);
@@ -99,7 +80,7 @@ class AStarAlgorithm {
       stats.nodesVisited++;
 
       if (current === goalId) {
-        // Goal found - reconstruct path
+        
         const path = this.reconstructPath(cameFrom, current);
         const distance = this.calculatePathDistance(path, graph);
         const estimatedTime = this.estimateTime(distance);
@@ -150,7 +131,6 @@ class AStarAlgorithm {
       }
     }
 
-    // No path found
     return {
       success: false,
       path: [],
@@ -167,11 +147,6 @@ class AStarAlgorithm {
     };
   }
 
-  /**
-   * Heuristic function: Haversine distance
-   * Estimates straight-line distance to goal
-   * Admissible: never overestimates actual distance
-   */
   static heuristic(currentNode, goalNode) {
     return calculateHaversineDistance(
       currentNode.lat,
@@ -181,9 +156,6 @@ class AStarAlgorithm {
     );
   }
 
-  /**
-   * Reconstruct path from start to goal
-   */
   static reconstructPath(cameFrom, current) {
     const path = [];
     let node = current;
@@ -192,14 +164,11 @@ class AStarAlgorithm {
       path.unshift(node);
       node = cameFrom.get(node);
     }
-    path.unshift(node); // Add start node
+    path.unshift(node); 
 
     return path;
   }
 
-  /**
-   * Calculate actual distance traveled along path
-   */
   static calculatePathDistance(pathIds, graph) {
     let totalDistance = 0;
     for (let i = 0; i < pathIds.length - 1; i++) {
@@ -217,17 +186,10 @@ class AStarAlgorithm {
     return totalDistance;
   }
 
-  /**
-   * Estimate delivery time
-   * Simple model: 5 minutes per kilometer (average city speed ~12 km/h)
-   */
   static estimateTime(distance) {
     return Math.round(distance * 5);
   }
 
-  /**
-   * Convert path IDs to coordinates
-   */
   static pathToCoordinates(pathIds, graph) {
     return pathIds.map((id) => {
       const node = graph.nodes[id];

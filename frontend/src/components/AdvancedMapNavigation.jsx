@@ -18,7 +18,7 @@ const mapContainerStyle = {
 
 const center = {
   lat: 28.6139,
-  lng: 77.2090, // Default: New Delhi
+  lng: 77.2090, 
 };
 
 const defaultOptions = {
@@ -26,8 +26,6 @@ const defaultOptions = {
   zoomControl: true,
 };
 
-// --- Custom Bidirectional Dijkstra Implementation ---
-// Generates a mock road graph approximation between two points
 const generateRoadGraph = (startLat, startLng, endLat, endLng) => {
   const GRID_SIZE = 5;
   const graph = { nodes: {}, adjacencyList: {} };
@@ -55,7 +53,7 @@ const generateRoadGraph = (startLat, startLng, endLat, endLng) => {
     const a = 0.5 - c((lat2 - lat1) * p)/2 + 
             c(lat1 * p) * c(lat2 * p) * 
             (1 - c((lon2 - lon1) * p))/2;
-    return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+    return 12742 * Math.asin(Math.sqrt(a)); 
   };
 
   for (let i = 0; i <= GRID_SIZE; i++) {
@@ -67,7 +65,7 @@ const generateRoadGraph = (startLat, startLng, endLat, endLng) => {
         if (ni >= 0 && ni <= GRID_SIZE && nj >= 0 && nj <= GRID_SIZE) {
           const v = `${ni}_${nj}`;
           const dist = getDist(graph.nodes[u].lat, graph.nodes[u].lng, graph.nodes[v].lat, graph.nodes[v].lng);
-          const weight = dist * (1 + Math.random() * 0.2); // Random traffic weight
+          const weight = dist * (1 + Math.random() * 0.2); 
           graph.adjacencyList[u].push({ node: v, weight });
         }
       });
@@ -170,7 +168,6 @@ const computeBidirectionalDijkstra = (startLat, startLng, endLat, endLng) => {
   curr = backwardParent[bestMeetingNode];
   while (curr) { path.push(graph.nodes[curr]); curr = backwardParent[curr]; }
 
-  // Extract a few alternative routes (sub-optimal paths from the graph for visualization)
   const alternativeRoutes = [];
   for (let i = 0; i < 2; i++) {
      const altPath = [];
@@ -180,7 +177,7 @@ const computeBidirectionalDijkstra = (startLat, startLng, endLat, endLng) => {
        const neighbors = graph.adjacencyList[altCurr];
        const next = neighbors[Math.floor(Math.random() * neighbors.length)].node;
        altPath.push(graph.nodes[next]);
-       if(altPath.length > 15) { altPath.push(graph.nodes['5_5']); break; } // prevent infinite loop
+       if(altPath.length > 15) { altPath.push(graph.nodes['5_5']); break; } 
        altCurr = next;
      }
      alternativeRoutes.push(altPath);
@@ -189,12 +186,11 @@ const computeBidirectionalDijkstra = (startLat, startLng, endLat, endLng) => {
   return { path: path.map(n => ({ lat: n.lat, lng: n.lng })), distance: mu, alternativeRoutes };
 };
 
-// SVG Delivery Boy Icon
 const deliveryIconSvg = `data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="%233b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`;
 
 const AdvancedMapNavigation = () => {
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '', // Set your API key in .env
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '', 
     libraries,
   });
 
@@ -204,14 +200,12 @@ const AdvancedMapNavigation = () => {
   const [shortestRoute, setShortestRoute] = useState([]);
   const [altRoutes, setAltRoutes] = useState([]);
   const [distance, setDistance] = useState(0);
-  
-  // Animation State
+
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentPosition, setCurrentPosition] = useState(null);
   const [streetViewPosition, setStreetViewPosition] = useState(null);
   const animationRef = useRef(null);
-  
-  // Autocomplete Refs
+
   const pickupAutocompleteRef = useRef(null);
   const dropAutocompleteRef = useRef(null);
 
@@ -245,17 +239,14 @@ const AdvancedMapNavigation = () => {
 
   const calculateRoute = () => {
     if (!pickup || !drop) return;
-    
-    // Stop any existing animation
+
     if (isAnimating) stopAnimation();
 
-    // Run Bidirectional Dijkstra
     const result = computeBidirectionalDijkstra(pickup.lat, pickup.lng, drop.lat, drop.lng);
     setShortestRoute(result.path);
     setAltRoutes(result.alternativeRoutes || []);
     setDistance(result.distance);
-    
-    // Fit bounds
+
     if (map && window.google) {
       const bounds = new window.google.maps.LatLngBounds();
       result.path.forEach(p => bounds.extend(p));
@@ -273,7 +264,7 @@ const AdvancedMapNavigation = () => {
         setCurrentPosition(shortestRoute[step]);
         setStreetViewPosition(shortestRoute[step]);
         step++;
-        animationRef.current = setTimeout(animate, 800); // 800ms per node
+        animationRef.current = setTimeout(animate, 800); 
       } else {
         setIsAnimating(false);
       }
@@ -293,7 +284,7 @@ const AdvancedMapNavigation = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50 text-gray-800 font-sans">
-      {/* Left Panel */}
+      {}
       <div className="w-full md:w-1/3 p-6 bg-white shadow-xl z-10 flex flex-col overflow-y-auto">
         <div className="flex items-center gap-3 mb-8">
           <div className="bg-blue-600 p-2 rounded-lg text-white">
@@ -375,9 +366,9 @@ const AdvancedMapNavigation = () => {
         )}
       </div>
 
-      {/* Right Panel - Map & Street View */}
+      {}
       <div className="w-full md:w-2/3 h-[50vh] md:h-screen relative flex flex-col">
-        {/* Street View Container - Appears when animating */}
+        {}
         {isAnimating && streetViewPosition && (
            <div className="h-1/3 w-full border-b-4 border-blue-600 shadow-lg relative z-20">
               <GoogleMap
@@ -405,13 +396,13 @@ const AdvancedMapNavigation = () => {
             options={defaultOptions}
             onLoad={handleMapLoad}
           >
-            {/* Pickup Marker */}
+            {}
             {pickup && <Marker position={pickup} label="P" />}
             
-            {/* Drop Marker */}
+            {}
             {drop && <Marker position={drop} label="D" />}
 
-            {/* Alternative Routes */}
+            {}
             {altRoutes.map((route, idx) => (
               <Polyline
                 key={idx}

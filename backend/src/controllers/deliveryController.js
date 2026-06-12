@@ -4,10 +4,6 @@ const calculateHaversineDistance = require('../utils/haversineDistance');
 const generateOptimizedRoute = require('../utils/routeOptimizer');
 const mongoose = require('mongoose');
 
-/**
- * Create a new delivery
- * POST /api/deliveries/create
- */
 exports.createDelivery = async (req, res) => {
   try {
     const {
@@ -17,9 +13,6 @@ exports.createDelivery = async (req, res) => {
       priority,
     } = req.body;
 
-
-
-    // Validate required fields
     if (!pickupLocation) {
       return res.status(400).json({
         success: false,
@@ -34,7 +27,6 @@ exports.createDelivery = async (req, res) => {
       });
     }
 
-    // Validate pickup location coordinates
     if (typeof pickupLocation.latitude !== 'number' || typeof pickupLocation.longitude !== 'number') {
       return res.status(400).json({
         success: false,
@@ -42,7 +34,6 @@ exports.createDelivery = async (req, res) => {
       });
     }
 
-    // Validate drop locations
     for (let i = 0; i < dropLocations.length; i++) {
       const drop = dropLocations[i];
       if (typeof drop.latitude !== 'number' || typeof drop.longitude !== 'number') {
@@ -73,7 +64,6 @@ exports.createDelivery = async (req, res) => {
 
     await newDelivery.save();
 
-    // Auto-assign nearest partner
     const availablePartners = await Partner.find({ isAvailable: true });
     let nearestPartner = null;
     let shortestDistance = Infinity;
@@ -121,11 +111,6 @@ exports.createDelivery = async (req, res) => {
   }
 };
 
-/**
- * Assign nearest partner to delivery with PRIORITY consideration
- * High-priority deliveries get assigned to nearest available partner first
- * POST /api/deliveries/assign-partner
- */
 exports.assignPartner = async (req, res) => {
   try {
     const { deliveryId } = req.body;
@@ -138,7 +123,6 @@ exports.assignPartner = async (req, res) => {
       });
     }
 
-    // Find partners who can take more deliveries
     const partners = await Partner.find();
     const availablePartners = partners.filter((p) => {
       const activeCount = Array.isArray(p.assignedDeliveryIds) ? p.assignedDeliveryIds.length : 0;
@@ -152,11 +136,8 @@ exports.assignPartner = async (req, res) => {
       });
     }
 
-    // Priority Logic: High-priority deliveries get the CLOSEST partner regardless of priority
-    // Medium/Low priority deliveries wait longer if high-priority is pending
     const isHighPriority = delivery.priority === 'high';
-    
-    // Calculate distance to each partner using Haversine formula
+
     let nearestPartner = null;
     let minDistance = Infinity;
 
@@ -181,18 +162,14 @@ exports.assignPartner = async (req, res) => {
       });
     }
 
-    // Assign partner to delivery
     delivery.assignedPartnerId = nearestPartner._id;
     delivery.status = 'assigned';
 
-    // Estimated delivery time based on distance and priority
-    // High priority = faster estimated time
-    const baseTime = minDistance * 5; // 5 minutes per km
-    const priorityMultiplier = isHighPriority ? 0.8 : 1.0; // High priority = 20% faster
+    const baseTime = minDistance * 5; 
+    const priorityMultiplier = isHighPriority ? 0.8 : 1.0; 
     const estimatedMinutes = Math.round(baseTime * priorityMultiplier);
     delivery.estimatedDeliveryTime = new Date(Date.now() + estimatedMinutes * 60000);
 
-    // Generate priority-aware optimized route
     const route = generateOptimizedRoute(
       delivery.pickupLocation,
       delivery.dropLocations
@@ -201,7 +178,6 @@ exports.assignPartner = async (req, res) => {
 
     await delivery.save();
 
-    // Update partner availability and assigned list
     if (!Array.isArray(nearestPartner.assignedDeliveryIds)) {
       nearestPartner.assignedDeliveryIds = [];
     }
@@ -233,10 +209,6 @@ exports.assignPartner = async (req, res) => {
   }
 };
 
-/**
- * Get all deliveries
- * GET /api/deliveries
- */
 exports.getAllDeliveries = async (req, res) => {
   try {
     const deliveries = await Delivery.find()
@@ -257,10 +229,6 @@ exports.getAllDeliveries = async (req, res) => {
   }
 };
 
-/**
- * Get deliveries for current customer
- * GET /api/deliveries/me
- */
 exports.getMyDeliveries = async (req, res) => {
   try {
     const customerId = req.user?.customerId;
@@ -278,10 +246,6 @@ exports.getMyDeliveries = async (req, res) => {
   }
 };
 
-/**
- * Get delivery by ID with route
- * GET /api/deliveries/:deliveryId/route
- */
 exports.getDeliveryRoute = async (req, res) => {
   try {
     const { deliveryId } = req.params;
@@ -319,10 +283,6 @@ exports.getDeliveryRoute = async (req, res) => {
   }
 };
 
-/**
- * Track delivery with live location update
- * POST /api/deliveries/track
- */
 exports.trackDelivery = async (req, res) => {
   try {
     const { deliveryId, latitude, longitude, status } = req.body;
@@ -342,7 +302,6 @@ exports.trackDelivery = async (req, res) => {
       });
     }
 
-    // Add tracking history
     delivery.trackingHistory.push({
       latitude,
       longitude,
@@ -350,19 +309,16 @@ exports.trackDelivery = async (req, res) => {
       timestamp: new Date(),
     });
 
-    // Update delivery status if provided
     if (status) {
       delivery.status = status;
     }
 
-    // Update actual delivery time if status is delivered
     if (status === 'delivered') {
       delivery.actualDeliveryTime = new Date();
     }
 
     await delivery.save();
 
-    // Update partner's current location and active delivery list
     if (delivery.assignedPartnerId) {
       const partner = await Partner.findById(delivery.assignedPartnerId);
       if (partner) {
@@ -396,10 +352,6 @@ exports.trackDelivery = async (req, res) => {
   }
 };
 
-/**
- * Get delivery by ID
- * GET /api/deliveries/:deliveryId
- */
 exports.getDeliveryById = async (req, res) => {
   try {
     const { deliveryId } = req.params;
@@ -431,10 +383,6 @@ exports.getDeliveryById = async (req, res) => {
   }
 };
 
-/**
- * Public endpoint to track delivery by ID
- * GET /api/deliveries/track/:id
- */
 exports.publicTrackDelivery = async (req, res) => {
   try {
     const mongoose = require('mongoose');
@@ -451,7 +399,6 @@ exports.publicTrackDelivery = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Delivery not found' });
     }
 
-    // Compute navigation path using bidirectional Dijkstra
     const bidirectionalDijkstra = require('../utils/bidirectionalDijkstra');
     let navigationPath = [];
     const pickup = delivery.pickupLocation;
@@ -481,21 +428,15 @@ exports.publicTrackDelivery = async (req, res) => {
   }
 };
 
-/**
- * Get all pending deliveries sorted by priority (HIGH priority first)
- * GET /api/deliveries/priority/pending
- * This is the main endpoint for emergency patrol-based delivery assignment
- */
 exports.getPendingByPriority = async (req, res) => {
   try {
-    // Priority order: high > medium > low
+    
     const priorityOrder = { 'high': 1, 'medium': 2, 'low': 3 };
     
     const deliveries = await Delivery.find({ status: 'pending' })
       .populate('assignedPartnerId', 'name email phoneNumber currentLocation')
       .lean();
 
-    // Sort by priority (high first), then by creation time (older first)
     deliveries.sort((a, b) => {
       const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
       if (priorityDiff !== 0) return priorityDiff;
@@ -521,10 +462,6 @@ exports.getPendingByPriority = async (req, res) => {
   }
 };
 
-/**
- * Get delivery priority summary (High/Medium/Low breakdown)
- * GET /api/deliveries/priority/summary
- */
 exports.getPrioritySummary = async (req, res) => {
   try {
     const deliveries = await Delivery.find().lean();
@@ -543,16 +480,13 @@ exports.getPrioritySummary = async (req, res) => {
       const priority = delivery.priority || 'medium';
       const status = delivery.status || 'pending';
 
-      // Count by priority
       summary.byPriority[priority].total++;
-      
-      // Count by status/priority combination
+
       if (status === 'pending') summary.byPriority[priority].pending++;
       if (status === 'assigned') summary.byPriority[priority].assigned++;
       if (status === 'in_transit') summary.byPriority[priority].inTransit++;
       if (status === 'delivered') summary.byPriority[priority].delivered++;
 
-      // Count by status
       if (!summary.byStatus[status]) summary.byStatus[status] = 0;
       summary.byStatus[status]++;
     });
@@ -570,14 +504,9 @@ exports.getPrioritySummary = async (req, res) => {
   }
 };
 
-/**
- * Bulk assign partners to high-priority pending deliveries (Emergency Mode)
- * POST /api/deliveries/emergency/assign-all
- * This endpoint automatically assigns "closest partner to pickup" for all high-priority pending deliveries
- */
 exports.emergencyAssignAll = async (req, res) => {
   try {
-    // Get all pending deliveries sorted by priority (high first), then creation time
+    
     const pendingDeliveries = await Delivery.find({
       status: 'pending',
     }).sort({ createdAt: 1 });
@@ -603,7 +532,7 @@ exports.emergencyAssignAll = async (req, res) => {
     const partners = await Partner.find();
 
     for (const delivery of pendingDeliveries) {
-      // Find available partners
+      
       const available = partners.filter(p => {
         const activeCount = Array.isArray(p.assignedDeliveryIds) ? p.assignedDeliveryIds.length : 0;
         return activeCount < (p.maxActiveDeliveries || 1);
@@ -618,9 +547,6 @@ exports.emergencyAssignAll = async (req, res) => {
         continue;
       }
 
-      // Priority-aware nearest partner:
-      // choose partner minimizing score = distance * weight(priority)
-      // (High priority favors going farther vs delaying; Low priority penalized.)
       const weight = priorityDistanceWeight[delivery.priority] ?? 1.0;
       let chosen = available[0];
       let minScore = Infinity;
@@ -641,7 +567,6 @@ exports.emergencyAssignAll = async (req, res) => {
         }
       }
 
-      // Assign
       delivery.assignedPartnerId = chosen._id;
       delivery.status = 'assigned';
 
@@ -686,14 +611,10 @@ exports.emergencyAssignAll = async (req, res) => {
   }
 };
 
-/**
- * Compute optimized route for delivery using A* algorithm
- * GET /api/deliveries/:deliveryId/optimize-route
- */
 exports.optimizeDeliveryRoute = async (req, res) => {
   try {
     const { deliveryId } = req.params;
-    const { algorithm = 'astar' } = req.query; // astar or bidirectional
+    const { algorithm = 'astar' } = req.query; 
 
     const delivery = await Delivery.findById(deliveryId);
     if (!delivery) {
@@ -707,7 +628,6 @@ exports.optimizeDeliveryRoute = async (req, res) => {
     const BidirectionalDijkstra = require('../utils/bidirectionalDijkstra');
     const GraphBuilder = require('../utils/graphBuilder');
 
-    // Build list of all stops (pickup + drops)
     const stops = [
       delivery.pickupLocation,
       ...delivery.dropLocations,
@@ -725,12 +645,10 @@ exports.optimizeDeliveryRoute = async (req, res) => {
     const segmentResults = [];
     const startTime = Date.now();
 
-    // Compute route for each segment using selected algorithm
     for (let i = 0; i < stops.length - 1; i++) {
       const fromStop = stops[i];
       const toStop = stops[i + 1];
 
-      // Build graph for this segment
       const graph = GraphBuilder.generateGraph(
         fromStop.latitude,
         fromStop.longitude,
@@ -739,7 +657,6 @@ exports.optimizeDeliveryRoute = async (req, res) => {
         6
       );
 
-      // Find path using selected algorithm
       let result;
       if (algorithm === 'astar') {
         result = AStarAlgorithm.findPath(graph, graph.startId, graph.endId);
@@ -760,7 +677,6 @@ exports.optimizeDeliveryRoute = async (req, res) => {
         });
       }
 
-      // Add segment path (avoid duplicating intermediate points)
       const segmentPath = result.path;
       if (completeRoute.length === 0) {
         completeRoute.push(...segmentPath);
@@ -780,7 +696,7 @@ exports.optimizeDeliveryRoute = async (req, res) => {
     }
 
     const executionTime = Date.now() - startTime;
-    const estimatedTotalTime = Math.round(totalDistance * 5); // 5 min per km
+    const estimatedTotalTime = Math.round(totalDistance * 5); 
 
     res.json({
       success: true,
@@ -806,10 +722,6 @@ exports.optimizeDeliveryRoute = async (req, res) => {
   }
 };
 
-/**
- * Compare routing algorithms for a delivery
- * GET /api/deliveries/:deliveryId/compare-algorithms
- */
 exports.compareRoutingAlgorithms = async (req, res) => {
   try {
     const { deliveryId } = req.params;
@@ -835,7 +747,6 @@ exports.compareRoutingAlgorithms = async (req, res) => {
       });
     }
 
-    // Run both algorithms on the same graph
     const comparisonData = [];
     let totalAStarDistance = 0;
     let totalDijkstraDistance = 0;

@@ -22,7 +22,6 @@ exports.register = async (req, res) => {
       return res.status(400).json({ success: false, message: 'name, email, password, role are required' });
     }
 
-
     const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) {
       return res.status(409).json({ success: false, message: 'Email already registered' });
@@ -37,7 +36,7 @@ exports.register = async (req, res) => {
         existingPartner = await Partner.create({
           name,
           email: email.toLowerCase(),
-          phoneNumber: '0000000000', // Default, should be updated by user later
+          phoneNumber: '0000000000', 
           currentLocation: { latitude: 28.6139, longitude: 77.2090 },
           isAvailable: true,
         });

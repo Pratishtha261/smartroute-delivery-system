@@ -4,7 +4,6 @@ import '../styles/PartnersMap.css';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Initialize marker icons
 const partnerIcon = L.icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
@@ -50,7 +49,7 @@ const PartnersMap = () => {
 
     const interval = setInterval(() => {
       fetchPartners();
-    }, 10000); // Refresh every 10 seconds
+    }, 10000); 
 
     return () => {
       clearInterval(interval);
@@ -68,8 +67,7 @@ const PartnersMap = () => {
         const fetchedPartners = response.data.data || [];
         setPartners(fetchedPartners);
         updateMapMarkers(fetchedPartners);
-        
-        // Fetch addresses for partners that don't have one yet
+
         fetchedPartners.forEach(p => {
           if (!partnerAddresses[p._id]) {
             fetchAddress(p.currentLocation.latitude, p.currentLocation.longitude, p._id);
@@ -99,14 +97,12 @@ const PartnersMap = () => {
   const updateMapMarkers = (partnersList) => {
     if (!mapInstanceRef.current) return;
 
-    // Clear existing markers
     mapInstanceRef.current.eachLayer((layer) => {
       if (layer instanceof L.Marker) {
         mapInstanceRef.current.removeLayer(layer);
       }
     });
 
-    // Add new markers
     partnersList.forEach((partner) => {
       const marker = L.marker(
         [partner.currentLocation.latitude, partner.currentLocation.longitude],
@@ -123,7 +119,6 @@ const PartnersMap = () => {
       `);
     });
 
-    // Fit bounds if there are partners
     if (partnersList.length > 0) {
       const bounds = L.latLngBounds(
         partnersList.map(p => [p.currentLocation.latitude, p.currentLocation.longitude])

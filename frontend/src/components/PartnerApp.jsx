@@ -137,8 +137,7 @@ export default function PartnerApp() {
     if (partnerLocation) {
       points.push([partnerLocation.latitude, partnerLocation.longitude]);
     }
-    
-    // Dynamic routing
+
     if (delivery.status === 'accepted' || delivery.status === 'assigned') {
       if (delivery.pickupLocation) {
         points.push([delivery.pickupLocation.latitude, delivery.pickupLocation.longitude]);
@@ -148,7 +147,7 @@ export default function PartnerApp() {
         points.push([delivery.dropLocations[0].latitude, delivery.dropLocations[0].longitude]);
       }
     } else {
-      // Full route fallback
+      
       if (delivery.pickupLocation) points.push([delivery.pickupLocation.latitude, delivery.pickupLocation.longitude]);
       delivery.dropLocations?.forEach(drop => points.push([drop.latitude, drop.longitude]));
     }
@@ -176,7 +175,6 @@ export default function PartnerApp() {
     
     drawRealRoute();
 
-    // Add markers
     if (delivery.pickupLocation) {
       const pickupMarker = L.marker([delivery.pickupLocation.latitude, delivery.pickupLocation.longitude], { icon: pickupIcon })
         .addTo(mapRef.current).bindPopup('Pickup Location');
@@ -199,8 +197,7 @@ export default function PartnerApp() {
 
   useEffect(() => {
     fetchDeliveries();
-    
-    // Auto refresh orders every 5 seconds
+
     const interval = setInterval(() => {
       fetchDeliveries();
     }, 5000);
@@ -225,7 +222,7 @@ export default function PartnerApp() {
       },
       (error) => {
         console.warn('Geolocation error:', error.message);
-        // Fallback mock location if geolocation fails
+        
         updateLocation(30.3165, 78.0322);
       },
       { enableHighAccuracy: true }
@@ -241,7 +238,6 @@ export default function PartnerApp() {
     };
   }, [fetchDeliveries, updateLocation]);
 
-  // Redraw route if location changes
   useEffect(() => {
     if (selectedDelivery) {
       showRoute(selectedDelivery);

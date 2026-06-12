@@ -3,20 +3,10 @@ const BidirectionalDijkstra = require('../utils/bidirectionalDijkstra');
 const GraphBuilder = require('../utils/graphBuilder');
 const calculateHaversineDistance = require('../utils/haversineDistance');
 
-/**
- * Routing Controller
- * Handles route computation and comparison between algorithms
- */
-
-/**
- * Compute route using specified algorithm
- * GET /api/route/compute?startLat=&startLng=&endLat=&endLng=&algo=astar|bidirectional
- */
 exports.computeRoute = async (req, res) => {
   try {
     const { startLat, startLng, endLat, endLng, algo = 'astar' } = req.query;
 
-    // Validate coordinates
     const coords = [startLat, startLng, endLat, endLng].map(parseFloat);
     if (coords.some((c) => isNaN(c))) {
       return res.status(400).json({
@@ -27,7 +17,6 @@ exports.computeRoute = async (req, res) => {
 
     const [lat1, lng1, lat2, lng2] = coords;
 
-    // Validate coordinate ranges
     if (
       Math.abs(lat1) > 90 ||
       Math.abs(lng1) > 180 ||
@@ -40,7 +29,6 @@ exports.computeRoute = async (req, res) => {
       });
     }
 
-    // Generate graph
     const graph = GraphBuilder.generateGraph(lat1, lng1, lat2, lng2, 8);
 
     let result;
@@ -84,15 +72,10 @@ exports.computeRoute = async (req, res) => {
   }
 };
 
-/**
- * Compare both algorithms on same route
- * GET /api/route/compare?startLat=&startLng=&endLat=&endLng=
- */
 exports.compareAlgorithms = async (req, res) => {
   try {
     const { startLat, startLng, endLat, endLng } = req.query;
 
-    // Validate coordinates
     const coords = [startLat, startLng, endLat, endLng].map(parseFloat);
     if (coords.some((c) => isNaN(c))) {
       return res.status(400).json({
@@ -103,7 +86,6 @@ exports.compareAlgorithms = async (req, res) => {
 
     const [lat1, lng1, lat2, lng2] = coords;
 
-    // Validate coordinate ranges
     if (
       Math.abs(lat1) > 90 ||
       Math.abs(lng1) > 180 ||
@@ -116,14 +98,11 @@ exports.compareAlgorithms = async (req, res) => {
       });
     }
 
-    // Generate single graph for fair comparison
     const graph = GraphBuilder.generateGraph(lat1, lng1, lat2, lng2, 8);
 
-    // Run both algorithms
     const astarResult = AStarAlgorithm.findPath(graph, graph.startId, graph.endId);
     const dijkstraResult = BidirectionalDijkstra.findPath(graph, graph.startId, graph.endId);
 
-    // Calculate efficiency metrics
     const comparison = {
       startCoordinates: { latitude: lat1, longitude: lng1 },
       endCoordinates: { latitude: lat2, longitude: lng2 },
@@ -150,7 +129,6 @@ exports.compareAlgorithms = async (req, res) => {
         },
       },
 
-      // Performance analysis
       efficiency: {
         astarFaster: astarResult.executionTime < dijkstraResult.executionTime,
         timeDifference: Math.abs(
@@ -179,11 +157,6 @@ exports.compareAlgorithms = async (req, res) => {
   }
 };
 
-/**
- * Multi-stop route optimization using A*
- * POST /api/route/optimize-multistop
- * Body: { stops: [{latitude, longitude}, ...] }
- */
 exports.optimizeMultiStop = async (req, res) => {
   try {
     const { stops } = req.body;
@@ -195,7 +168,6 @@ exports.optimizeMultiStop = async (req, res) => {
       });
     }
 
-    // Validate all coordinates
     for (let i = 0; i < stops.length; i++) {
       const { latitude, longitude } = stops[i];
       if (
@@ -216,21 +188,18 @@ exports.optimizeMultiStop = async (req, res) => {
     let totalDistance = 0;
     const segmentResults = [];
 
-    // Process each segment using A*
     for (let i = 0; i < stops.length - 1; i++) {
       const currentStop = stops[i];
       const nextStop = stops[i + 1];
 
-      // Build graph for this segment
       const graph = GraphBuilder.generateGraph(
         currentStop.latitude,
         currentStop.longitude,
         nextStop.latitude,
         nextStop.longitude,
-        6 // Smaller grid for multi-stop
+        6 
       );
 
-      // Find path using A*
       const result = AStarAlgorithm.findPath(graph, graph.startId, graph.endId);
 
       if (!result.success) {
@@ -241,12 +210,11 @@ exports.optimizeMultiStop = async (req, res) => {
         });
       }
 
-      // Avoid duplicating intermediate points
       const segmentPath = result.path;
       if (completeRoute.length === 0) {
         completeRoute.push(...segmentPath);
       } else {
-        completeRoute.push(...segmentPath.slice(1)); // Skip first point (duplicate)
+        completeRoute.push(...segmentPath.slice(1)); 
       }
 
       totalDistance += result.distance;
@@ -281,9 +249,6 @@ exports.optimizeMultiStop = async (req, res) => {
   }
 };
 
-/**
- * Generate recommendation based on algorithm performance
- */
 function generateRecommendation(astarResult, dijkstraResult) {
   const astarTime = astarResult.executionTime;
   const dijkstraTime = dijkstraResult.executionTime;

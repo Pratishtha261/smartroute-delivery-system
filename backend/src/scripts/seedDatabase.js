@@ -4,7 +4,7 @@ const Partner = require('../models/Partner');
 
 const seedDatabase = async () => {
   try {
-    // Connect to database
+    
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -12,11 +12,9 @@ const seedDatabase = async () => {
 
     console.log('Connected to MongoDB');
 
-    // Clear existing partners
     await Partner.deleteMany({});
     console.log('Cleared existing partners');
 
-    // Create demo partners with hardcoded locations
     const partners = [
       {
         name: 'Raj Kumar',

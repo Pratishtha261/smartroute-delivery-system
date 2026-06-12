@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { deliveryAPI } from '../services/apiClient';
 import '../styles/CustomerTracking.css';
 
-// Debounce hook
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -17,7 +16,7 @@ function useDebounce(value, delay) {
 }
 
 const DeliveryForm = ({ onDeliveryCreated }) => {
-  // Form State
+  
   const [customerName, setCustomerName] = useState('');
   const [pickup, setPickup] = useState({ address: '', latitude: null, longitude: null, city: '' });
   const [drop, setDrop] = useState({ address: '', latitude: null, longitude: null, city: '' });
@@ -26,7 +25,6 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Autocomplete Search State
   const [pickupQuery, setPickupQuery] = useState('');
   const [dropQuery, setDropQuery] = useState('');
   const debouncedPickup = useDebounce(pickupQuery, 500);
@@ -37,7 +35,6 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
   const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
 
-  // References to detect clicks outside dropdown
   const pickupRef = useRef(null);
   const dropRef = useRef(null);
 
@@ -54,7 +51,6 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Fetch Nominatim Suggestions
   const searchAddress = async (query) => {
     if (!query || query.length < 3) return [];
     try {
@@ -67,7 +63,6 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
     }
   };
 
-  // Pickup effect
   useEffect(() => {
     if (debouncedPickup && debouncedPickup !== pickup.address) {
       searchAddress(debouncedPickup).then((res) => {
@@ -79,7 +74,6 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
     }
   }, [debouncedPickup, pickup.address]);
 
-  // Drop effect
   useEffect(() => {
     if (debouncedDrop && debouncedDrop !== drop.address) {
       searchAddress(debouncedDrop).then((res) => {
@@ -98,7 +92,7 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
       address: newAddress,
       latitude: parseFloat(suggestion.lat),
       longitude: parseFloat(suggestion.lon),
-      city: 'Dehradun' // Default fallback
+      city: 'Dehradun' 
     });
     setShowPickupSuggestions(false);
   };
@@ -137,8 +131,7 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
 
       await deliveryAPI.createDelivery(payload);
       setMessage('Delivery created successfully!');
-      
-      // Reset form
+
       setCustomerName('');
       setPickup({ address: '', latitude: null, longitude: null, city: '' });
       setDrop({ address: '', latitude: null, longitude: null, city: '' });
@@ -156,9 +149,8 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
     }
   };
 
-  // UI Styles matching the screenshot
   const containerStyle = {
-    backgroundColor: '#f3f4f6', // Light gray similar to screenshot
+    backgroundColor: '#f3f4f6', 
     padding: '30px',
     borderRadius: '16px',
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
@@ -236,7 +228,7 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
       
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
-        {/* Customer Name Field */}
+        {}
         <div>
           <label style={labelStyle}>Customer Name</label>
           <input 
@@ -249,7 +241,7 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
           />
         </div>
 
-        {/* Pickup Location Field */}
+        {}
         <div style={{ position: 'relative' }} ref={pickupRef}>
           <label style={labelStyle}>Pickup Location</label>
           <input 
@@ -281,7 +273,7 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
           )}
         </div>
 
-        {/* Drop-off Location Field */}
+        {}
         <div style={{ position: 'relative' }} ref={dropRef}>
           <label style={labelStyle}>Drop Location</label>
           <input 
@@ -313,7 +305,7 @@ const DeliveryForm = ({ onDeliveryCreated }) => {
           )}
         </div>
 
-        {/* Priority Field */}
+        {}
         <div>
           <label style={labelStyle}>Priority</label>
           <select 

@@ -20,7 +20,7 @@ const DeliveryList = ({ role = 'manager' }) => {
       fetchDeliveries();
       fetchPrioritySummary();
       fetchPartners();
-    }, 5000); // Refresh every 5 seconds
+    }, 5000); 
     return () => clearInterval(interval);
   }, []);
 

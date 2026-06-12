@@ -2,11 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { routingAPI } from '../services/apiClient';
 import '../styles/RoutingVisualization.css';
 
-/**
- * Routing Visualization Component
- * Displays and compares A* and Bidirectional Dijkstra algorithms
- * Shows route computation time, distance, and nodes explored
- */
 const RoutingVisualization = () => {
   const [startCoords, setStartCoords] = useState({ latitude: 28.7041, longitude: 77.1025 });
   const [endCoords, setEndCoords] = useState({ latitude: 28.5355, longitude: 77.3910 });
@@ -18,7 +13,6 @@ const RoutingVisualization = () => {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('compute');
 
-  // Test stops for multi-stop optimization
   const [multiStopMode, setMultiStopMode] = useState(false);
   const [stops, setStops] = useState([
     { latitude: 28.7041, longitude: 77.1025 },
@@ -26,9 +20,6 @@ const RoutingVisualization = () => {
     { latitude: 28.5355, longitude: 77.3910 },
   ]);
 
-  /**
-   * Compute single route with A* algorithm
-   */
   const handleComputeAStar = async () => {
     setLoading(true);
     setError('');
@@ -48,9 +39,6 @@ const RoutingVisualization = () => {
     }
   };
 
-  /**
-   * Compute single route with Bidirectional Dijkstra
-   */
   const handleComputeBidirectional = async () => {
     setLoading(true);
     setError('');
@@ -70,9 +58,6 @@ const RoutingVisualization = () => {
     }
   };
 
-  /**
-   * Compare both algorithms on same route
-   */
   const handleCompareAlgorithms = async () => {
     setLoading(true);
     setError('');
@@ -84,7 +69,7 @@ const RoutingVisualization = () => {
         endCoords.longitude
       );
       setComparison(result.data.data);
-      // Also get individual routes
+      
       await handleComputeAStar();
       await handleComputeBidirectional();
     } catch (err) {
@@ -94,9 +79,6 @@ const RoutingVisualization = () => {
     }
   };
 
-  /**
-   * Optimize multi-stop route
-   */
   const handleOptimizeMultiStop = async () => {
     setLoading(true);
     setError('');
@@ -113,9 +95,6 @@ const RoutingVisualization = () => {
     }
   };
 
-  /**
-   * Add stop to multi-stop list
-   */
   const addStop = () => {
     setStops([
       ...stops,
@@ -123,16 +102,10 @@ const RoutingVisualization = () => {
     ]);
   };
 
-  /**
-   * Remove stop from list
-   */
   const removeStop = (index) => {
     setStops(stops.filter((_, i) => i !== index));
   };
 
-  /**
-   * Update stop coordinates
-   */
   const updateStop = (index, field, value) => {
     const newStops = [...stops];
     newStops[index][field] = parseFloat(value);
@@ -169,7 +142,7 @@ const RoutingVisualization = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      {/* Single Route Tab */}
+      {}
       {activeTab === 'compute' && (
         <div className="routing-content">
           <div className="input-section">
@@ -302,7 +275,7 @@ const RoutingVisualization = () => {
         </div>
       )}
 
-      {/* Algorithm Comparison Tab */}
+      {}
       {activeTab === 'compare' && (
         <div className="routing-content">
           <div className="input-section">
@@ -451,7 +424,7 @@ const RoutingVisualization = () => {
         </div>
       )}
 
-      {/* Multi-Stop Optimization Tab */}
+      {}
       {activeTab === 'multistop' && (
         <div className="routing-content">
           <div className="input-section">

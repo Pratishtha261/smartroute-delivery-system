@@ -16,7 +16,6 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
-// Make points equidistant for smooth constant-speed animation
 const makeEquidistant = (points, stepDistanceKm = 0.005) => {
   const result = [];
   if (points.length < 2) return points;
@@ -121,7 +120,6 @@ const CustomerTracking = ({ deliveryId: propDeliveryId }) => {
 
     const latlngs = points.map((point) => [point.latitude, point.longitude]);
 
-    // Default straight line while real road loads
     routeLayerRef.current = L.polyline(latlngs, {
       color: '#2563eb',
       weight: 5,
@@ -239,7 +237,7 @@ const CustomerTracking = ({ deliveryId: propDeliveryId }) => {
   const startAnimation = useCallback(() => {
     if (!trackingData?.route?.length || !mapRef.current) return;
 
-    stopPolling(); // Stop polling to prevent map wipe/flickering during simulation
+    stopPolling(); 
 
     let baseRoute;
     if (osrmRouteRef.current && osrmRouteRef.current.length > 0) {
@@ -250,8 +248,7 @@ const CustomerTracking = ({ deliveryId: propDeliveryId }) => {
 
     if (baseRoute.length < 2) return;
 
-    // Make points equidistant for perfectly smooth animation speed
-    const route = makeEquidistant(baseRoute, 0.002); // Every ~2 meters
+    const route = makeEquidistant(baseRoute, 0.002); 
 
     setIsAnimating(true);
     let index = 0;
@@ -269,7 +266,7 @@ const CustomerTracking = ({ deliveryId: propDeliveryId }) => {
         if (deliveryId) startPolling(deliveryId);
         return;
       }
-      animationTimeoutRef.current = setTimeout(animateStep, 20); // 20ms = 50fps for buttery smooth movement
+      animationTimeoutRef.current = setTimeout(animateStep, 20); 
     };
 
     if (!partnerMarkerRef.current) {
@@ -294,10 +291,9 @@ const CustomerTracking = ({ deliveryId: propDeliveryId }) => {
     }
   }, [trackingData, renderMap, isAnimating]);
 
-  // Automatically start partner movement animation when delivery is in live status
   useEffect(() => {
     if (trackingData && ['assigned', 'picked_up', 'in_transit'].includes(trackingData.status)) {
-      // Small delay to ensure map is rendered before starting animation
+      
       const timer = setTimeout(() => {
         startAnimation();
       }, 500);

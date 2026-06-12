@@ -92,17 +92,30 @@ async function testComparison(testCase) {
 
     const data = response.data.data;
     console.log(`\n  📊 Performance Comparison:`);
-    console.log(`    A* Time:              ${formatTime(data.algorithms.astar.executionTime)}`);
-    console.log(`    Bidirectional Time:   ${formatTime(data.algorithms.bidirectional.executionTime)}`);
-    console.log(`    Time Difference:      ${formatTime(data.efficiency.timeDifference)}`);
-    console.log(`    A* Nodes:             ${data.algorithms.astar.stats.nodesExpanded}`);
-    console.log(`    Bidirectional Nodes:  ${data.algorithms.bidirectional.stats.totalNodesVisited}`);
-    console.log(`    Distance (both):      ${formatDistance(data.algorithms.astar.distance)}`);
+    
+    const astarTime = data.algorithms?.astar?.executionTime ?? data.astar?.executionTime ?? 0;
+    const bidirectionalTime = data.algorithms?.bidirectional?.executionTime ?? data.bidirectional?.executionTime ?? 0;
+    const timeDifference = data.efficiency?.timeDifference ?? Math.abs(astarTime - bidirectionalTime);
+    const astarNodes = data.algorithms?.astar?.stats?.nodesExpanded ?? data.astar?.stats?.nodesExplored ?? 0;
+    const bidirectionalNodes = data.algorithms?.bidirectional?.stats?.totalNodesVisited ?? data.bidirectional?.stats?.nodesExplored ?? 0;
+    const distance = data.algorithms?.astar?.distance ?? data.astar?.distance ?? 0;
+
+    console.log(`    A* Time:              ${formatTime(astarTime)}`);
+    console.log(`    Bidirectional Time:   ${formatTime(bidirectionalTime)}`);
+    console.log(`    Time Difference:      ${formatTime(timeDifference)}`);
+    console.log(`    A* Nodes:             ${astarNodes}`);
+    console.log(`    Bidirectional Nodes:  ${bidirectionalNodes}`);
+    console.log(`    Distance (both):      ${formatDistance(distance)}`);
 
     if (data.recommendation) {
-      console.log(`\n  💡 Recommendation: ${data.recommendation.algorithm}`);
-      console.log(`     ${data.recommendation.reason}`);
-      console.log(`     Speedup: ${data.recommendation.speedup}x`);
+      const recAlgo = typeof data.recommendation === 'string' ? data.recommendation : data.recommendation.algorithm;
+      console.log(`\n  💡 Recommendation: ${recAlgo}`);
+      if (data.recommendation.reason) {
+        console.log(`     ${data.recommendation.reason}`);
+      }
+      if (data.recommendation.speedup) {
+        console.log(`     Speedup: ${data.recommendation.speedup}x`);
+      }
     }
 
     return data;
@@ -122,14 +135,18 @@ async function testMultiStop() {
 
     const data = response.data.data;
     console.log(`    ✓ Total Distance: ${formatDistance(data.totalDistance)}`);
-    console.log(`    ✓ Total Time: ${data.estimatedTotalTime} min`);
+    console.log(`    ✓ Total Time: ${data.estimatedTotalTime ?? data.estimatedTime} min`);
     console.log(`    ✓ Execution Time: ${formatTime(data.executionTime)}`);
-    console.log(`    ✓ Segments: ${data.segments.length}`);
-
-    console.log(`\n    Segment Breakdown:`);
-    data.segments.forEach((segment, idx) => {
-      console.log(`      ${idx + 1}. ${segment.from} → ${segment.to}: ${formatDistance(segment.distance)} (${segment.time} min)`);
-    });
+    
+    if (data.segments) {
+      console.log(`    ✓ Segments: ${data.segments.length}`);
+      console.log(`\n    Segment Breakdown:`);
+      data.segments.forEach((segment, idx) => {
+        console.log(`      ${idx + 1}. ${segment.from || segment.fromStop} → ${segment.to || segment.toStop}: ${formatDistance(segment.distance)} (${segment.time} min)`);
+      });
+    } else {
+      console.log(`    ✓ Optimized Route Nodes: ${data.optimizedRoute ? data.optimizedRoute.length : 0}`);
+    }
 
     return data;
   } catch (error) {
@@ -146,7 +163,7 @@ async function runTests() {
 
   // Check if backend is running
   try {
-    await axios.get(`${API_BASE}/health || ${API_BASE.replace('/api', '')}/health`);
+    await axios.get(`${API_BASE}/health`);
   } catch (error) {
     console.error('❌ Backend is not running!');
     console.error('Please start the backend with: cd backend && npm run dev\n');

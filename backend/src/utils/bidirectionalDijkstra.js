@@ -1,8 +1,5 @@
 const calculateHaversineDistance = require('./haversineDistance');
 
-/**
- * Priority Queue for Dijkstra algorithms
- */
 class PriorityQueue {
   constructor() {
     this.items = [];
@@ -38,19 +35,8 @@ class PriorityQueue {
   }
 }
 
-/**
- * Bidirectional Dijkstra Algorithm
- * Searches from both start and end simultaneously
- * Typically faster than unidirectional Dijkstra
- */
 class BidirectionalDijkstra {
-  /**
-   * Find shortest path using Bidirectional Dijkstra
-   * @param {object} graph - Graph with nodes and adjacencyList
-   * @param {string} startId - Start node ID
-   * @param {string} goalId - Goal node ID
-   * @returns {object} Result with path, distance, time, stats
-   */
+  
   static findPath(graph, startId, goalId) {
     const startTime = Date.now();
     const stats = {
@@ -75,7 +61,6 @@ class BidirectionalDijkstra {
       };
     }
 
-    // Forward search (from start)
     const forwardDist = new Map();
     const forwardParent = new Map();
     const forwardPQ = new PriorityQueue();
@@ -84,7 +69,6 @@ class BidirectionalDijkstra {
     forwardDist.set(startId, 0);
     forwardPQ.enqueue(startId, 0);
 
-    // Backward search (from goal)
     const backwardDist = new Map();
     const backwardParent = new Map();
     const backwardPQ = new PriorityQueue();
@@ -98,12 +82,12 @@ class BidirectionalDijkstra {
     let bestMeetingNode = null;
 
     while (!forwardPQ.isEmpty() || !backwardPQ.isEmpty()) {
-      // Forward step
+      
       if (!forwardPQ.isEmpty()) {
         const { element: current, priority: currentDist } = forwardPQ.dequeue();
 
         if (currentDist >= bestDistance) {
-          break; // Early termination
+          break; 
         }
 
         if (!forwardVisited.has(current)) {
@@ -121,7 +105,6 @@ class BidirectionalDijkstra {
               forwardParent.set(neighbor, current);
               forwardPQ.enqueue(neighbor, newDist);
 
-              // Check if backward search reached this node
               if (backwardDist.has(neighbor)) {
                 const totalDist = newDist + backwardDist.get(neighbor);
                 if (totalDist < bestDistance) {
@@ -134,12 +117,11 @@ class BidirectionalDijkstra {
         }
       }
 
-      // Backward step
       if (!backwardPQ.isEmpty()) {
         const { element: current, priority: currentDist } = backwardPQ.dequeue();
 
         if (currentDist >= bestDistance) {
-          break; // Early termination
+          break; 
         }
 
         if (!backwardVisited.has(current)) {
@@ -157,7 +139,6 @@ class BidirectionalDijkstra {
               backwardParent.set(neighbor, current);
               backwardPQ.enqueue(neighbor, newDist);
 
-              // Check if forward search reached this node
               if (forwardDist.has(neighbor)) {
                 const totalDist = newDist + forwardDist.get(neighbor);
                 if (totalDist < bestDistance) {
@@ -192,7 +173,6 @@ class BidirectionalDijkstra {
       };
     }
 
-    // Reconstruct path
     const pathIds = this.reconstructPath(
       forwardParent,
       backwardParent,
@@ -225,20 +205,15 @@ class BidirectionalDijkstra {
     };
   }
 
-  /**
-   * Reconstruct path from forward and backward parent maps
-   */
   static reconstructPath(forwardParent, backwardParent, meeting, start) {
     const path = [];
 
-    // From start to meeting node (forward)
     let current = meeting;
     while (current !== undefined) {
       path.unshift(current);
       current = forwardParent.get(current);
     }
 
-    // From meeting to goal (backward)
     current = backwardParent.get(meeting);
     while (current !== undefined) {
       path.push(current);
@@ -248,11 +223,8 @@ class BidirectionalDijkstra {
     return path;
   }
 
-  /**
-   * Estimate delivery time
-   */
   static estimateTime(distance) {
-    return Math.round(distance * 5); // 5 min per km
+    return Math.round(distance * 5); 
   }
 }
 

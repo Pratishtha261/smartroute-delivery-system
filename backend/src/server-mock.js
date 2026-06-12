@@ -10,7 +10,6 @@ const allowedOrigins = [
   'http://localhost:3001',
 ];
 
-// Middleware
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
@@ -25,7 +24,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 
-// Mock Users
 const mockUsers = [
   {
     id: 'u1',
@@ -122,14 +120,14 @@ const requireDeliveryAccess = (req, res, next) => {
 
   return res.status(403).json({ success: false, message: 'Forbidden' });
 };
-// Mock Data
+
 const mockPartners = [
   {
     _id: '1',
     name: 'Amit Sharma',
     email: 'amit.sharma@delivery.com',
     phoneNumber: '9876543210',
-    currentLocation: { latitude: 30.3165, longitude: 78.0322 }, // Dehradun
+    currentLocation: { latitude: 30.3165, longitude: 78.0322 }, 
     city: 'Dehradun',
     isAvailable: true,
     assignedDeliveryIds: [],
@@ -141,7 +139,7 @@ const mockPartners = [
     name: 'Priya Singh',
     email: 'priya.singh@delivery.com',
     phoneNumber: '9876543211',
-    currentLocation: { latitude: 29.3919, longitude: 79.1108 }, // Nainital
+    currentLocation: { latitude: 29.3919, longitude: 79.1108 }, 
     city: 'Nainital',
     isAvailable: true,
     assignedDeliveryIds: [],
@@ -153,7 +151,7 @@ const mockPartners = [
     name: 'Rajesh Patel',
     email: 'rajesh.patel@delivery.com',
     phoneNumber: '9876543212',
-    currentLocation: { latitude: 30.1388, longitude: 78.7733 }, // Rishikesh
+    currentLocation: { latitude: 30.1388, longitude: 78.7733 }, 
     city: 'Rishikesh',
     isAvailable: true,
     assignedDeliveryIds: [],
@@ -165,7 +163,7 @@ const mockPartners = [
     name: 'Neha Verma',
     email: 'neha.verma@delivery.com',
     phoneNumber: '9876543213',
-    currentLocation: { latitude: 30.4456, longitude: 78.6114 }, // Mussoorie
+    currentLocation: { latitude: 30.4456, longitude: 78.6114 }, 
     city: 'Mussoorie',
     isAvailable: true,
     assignedDeliveryIds: [],
@@ -183,13 +181,13 @@ const mockCustomers = [
 ];
 
 let mockDeliveries = [
-  // Sample delivery for testing (Dehradun to Mussoorie)
+  
   {
     _id: '507f1f77bcf86cd799439011',
     customerId: 'c1',
-    pickupLocation: { latitude: 30.3165, longitude: 78.0322 }, // Dehradun Clock Tower
+    pickupLocation: { latitude: 30.3165, longitude: 78.0322 }, 
     dropLocations: [
-      { latitude: 30.4456, longitude: 78.6114 } // Mussoorie
+      { latitude: 30.4456, longitude: 78.6114 } 
     ],
     assignedPartnerId: {
       _id: '1',
@@ -216,7 +214,6 @@ let mockDeliveries = [
 ];
 let deliveryCounter = 2;
 
-// Haversine distance function
 function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -290,12 +287,10 @@ const assignPartnerToDelivery = (delivery) => {
   return { partner, distance };
 };
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Server is running' });
 });
 
-// Auth - login
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   const user = mockUsers.find(
@@ -321,7 +316,6 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
-// Auth - register (demo only)
 app.post('/api/auth/register', (req, res) => {
   const { name, email, password, role } = req.body;
   if (!name || !email || !password || !role) {
@@ -361,7 +355,6 @@ app.post('/api/auth/register', (req, res) => {
   });
 });
 
-// Create delivery
 app.post('/api/deliveries/create', requireAuth, requireRole('manager', 'customer'), (req, res) => {
   try {
     const { customerName, customerId, pickupLocation, dropLocations, priority } = req.body;
@@ -433,7 +426,6 @@ app.post('/api/deliveries/create', requireAuth, requireRole('manager', 'customer
   }
 });
 
-// Assign partner
 app.post('/api/deliveries/assign-partner', requireAuth, requireRole('manager'), (req, res) => {
   try {
     const { deliveryId } = req.body;
@@ -512,7 +504,6 @@ app.post('/api/deliveries/assign-partner', requireAuth, requireRole('manager'), 
   }
 });
 
-// Get all deliveries
 app.get('/api/deliveries', requireAuth, requireRole('manager'), (req, res) => {
   try {
     const deliveriesWithPartners = mockDeliveries.map((d) => ({
@@ -537,7 +528,6 @@ app.get('/api/deliveries', requireAuth, requireRole('manager'), (req, res) => {
   }
 });
 
-// Get delivery by ID
 app.get('/api/deliveries/:deliveryId', requireAuth, requireDeliveryAccess, (req, res) => {
   try {
     const { deliveryId } = req.params;
@@ -571,7 +561,6 @@ app.get('/api/deliveries/:deliveryId', requireAuth, requireDeliveryAccess, (req,
   }
 });
 
-// Get delivery route
 app.get('/api/deliveries/:deliveryId/route', requireAuth, requireDeliveryAccess, (req, res) => {
   try {
     const { deliveryId } = req.params;
@@ -605,13 +594,11 @@ app.get('/api/deliveries/:deliveryId/route', requireAuth, requireDeliveryAccess,
   }
 });
 
-// Customer deliveries
 app.get('/api/deliveries/me', requireAuth, requireRole('customer'), (req, res) => {
   const deliveries = mockDeliveries.filter((d) => d.customerId === req.user.customerId);
   return res.status(200).json({ success: true, count: deliveries.length, data: deliveries });
 });
 
-// Partner deliveries (priority sorted)
 app.get('/api/partners/me/deliveries', requireAuth, requireRole('partner'), (req, res) => {
   const priorityOrder = { high: 3, medium: 2, low: 1 };
   const deliveries = mockDeliveries
@@ -636,7 +623,6 @@ app.get('/api/partners/me/deliveries', requireAuth, requireRole('partner'), (req
   return res.status(200).json({ success: true, count: deliveries.length, data: deliveries });
 });
 
-// Public delivery tracking endpoint
 app.get('/api/deliveries/track/:deliveryId', (req, res) => {
   try {
     const { deliveryId } = req.params;
@@ -678,7 +664,6 @@ app.get('/api/deliveries/track/:deliveryId', (req, res) => {
   }
 });
 
-// Track delivery
 app.post('/api/deliveries/track', requireAuth, requireRole('partner'), requireDeliveryAccess, (req, res) => {
   try {
     const { deliveryId, latitude, longitude, status } = req.body;
@@ -741,7 +726,6 @@ app.post('/api/deliveries/track', requireAuth, requireRole('partner'), requireDe
   }
 });
 
-// Get all partners
 app.get('/api/partners', (req, res) => {
   try {
     res.status(200).json({
@@ -758,14 +742,10 @@ app.get('/api/partners', (req, res) => {
   }
 });
 
-// ============ ROUTING ENDPOINTS ============
-
-// Compute route with specified algorithm
 app.get('/api/route/compute', (req, res) => {
   try {
     const { startLat, startLng, endLat, endLng, algo = 'astar' } = req.query;
 
-    // Mock validation
     const coords = [startLat, startLng, endLat, endLng].map(parseFloat);
     if (coords.some((c) => isNaN(c))) {
       return res.status(400).json({
@@ -774,13 +754,11 @@ app.get('/api/route/compute', (req, res) => {
       });
     }
 
-    // Mock path (simple straight line)
     const path = [
       { latitude: parseFloat(startLat), longitude: parseFloat(startLng) },
       { latitude: parseFloat(endLat), longitude: parseFloat(endLng) },
     ];
 
-    // Mock distance using haversine
     const distance = calculateHaversineDistance(
       parseFloat(startLat),
       parseFloat(startLng),
@@ -788,7 +766,6 @@ app.get('/api/route/compute', (req, res) => {
       parseFloat(endLng)
     );
 
-    // Mock stats
     const stats = {
       nodesExplored: algo === 'astar' ? 15 : 12,
       executionTime: algo === 'astar' ? 2.5 : 3.1,
@@ -800,7 +777,7 @@ app.get('/api/route/compute', (req, res) => {
         algorithm: algo,
         path: path,
         distance: parseFloat(distance.toFixed(2)),
-        estimatedTime: Math.ceil(distance / 40 * 60), // Assume 40 km/h, minutes
+        estimatedTime: Math.ceil(distance / 40 * 60), 
         stats: stats,
         executionTime: stats.executionTime,
       },
@@ -814,7 +791,6 @@ app.get('/api/route/compute', (req, res) => {
   }
 });
 
-// Compare algorithms
 app.get('/api/route/compare', (req, res) => {
   try {
     const { startLat, startLng, endLat, endLng } = req.query;
@@ -875,7 +851,6 @@ app.get('/api/route/compare', (req, res) => {
   }
 });
 
-// Optimize multi-stop route
 app.post('/api/route/optimize-multistop', (req, res) => {
   try {
     const { stops } = req.body;
@@ -887,7 +862,6 @@ app.post('/api/route/optimize-multistop', (req, res) => {
       });
     }
 
-    // Mock optimization: just return stops in order with distances
     const optimizedRoute = stops.map((stop, index) => ({
       ...stop,
       sequenceNumber: index,
@@ -923,7 +897,6 @@ app.post('/api/route/optimize-multistop', (req, res) => {
   }
 });
 
-// Optimize delivery route
 app.get('/api/deliveries/:deliveryId/optimize-route', (req, res) => {
   try {
     const { deliveryId } = req.params;
@@ -937,7 +910,6 @@ app.get('/api/deliveries/:deliveryId/optimize-route', (req, res) => {
       });
     }
 
-    // Mock route optimization
     const route = [
       { ...delivery.pickupLocation, sequenceNumber: 0, type: 'pickup' },
       ...delivery.dropLocations.map((loc, idx) => ({
@@ -978,7 +950,6 @@ app.get('/api/deliveries/:deliveryId/optimize-route', (req, res) => {
   }
 });
 
-// Compare algorithms for delivery
 app.get('/api/deliveries/:deliveryId/compare-algorithms', (req, res) => {
   try {
     const { deliveryId } = req.params;
@@ -1046,7 +1017,6 @@ app.get('/api/deliveries/:deliveryId/compare-algorithms', (req, res) => {
   }
 });
 
-// Update partner location
 app.post('/api/partners/update-location', requireAuth, requireRole('partner'), (req, res) => {
   try {
     const { latitude, longitude } = req.body;
@@ -1078,7 +1048,6 @@ app.post('/api/partners/update-location', requireAuth, requireRole('partner'), (
   }
 });
 
-// Partner earnings
 app.get('/api/partner/earnings', requireAuth, requireRole('partner'), (req, res) => {
   res.json({
     success: true,
@@ -1090,7 +1059,6 @@ app.get('/api/partner/earnings', requireAuth, requireRole('partner'), (req, res)
   });
 });
 
-// Partner accept/reject
 app.post('/api/partner/accept', requireAuth, requireRole('partner'), (req, res) => {
   try {
     const { deliveryId, action } = req.body;
@@ -1121,7 +1089,6 @@ app.post('/api/partner/accept', requireAuth, requireRole('partner'), (req, res) 
   }
 });
 
-// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Mock Server running on http://localhost:${PORT}`);
