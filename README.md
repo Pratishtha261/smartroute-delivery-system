@@ -1,10 +1,10 @@
-# SmartRoute: Real-Time Delivery Management & Route Optimization Platform
+# SmartRoute: A Web-Based Intelligent Delivery Optimization System
 
 SmartRoute is a full-stack delivery management and logistics optimization system. It features real-time delivery partner assignment, simulated live location tracking, interactive maps, and routing path optimization using custom implementations of the A* and Bidirectional Dijkstra algorithms.
 
 ---
 
-## 🚀 Key Features
+##  Key Features
 
 *   **Intelligent Auto-Assignment:** Automatically assigns new deliveries to the nearest available delivery partner using the **Haversine formula** to calculate distance.
 *   **Real-Time Simulation & Tracking:**
@@ -18,7 +18,7 @@ SmartRoute is a full-stack delivery management and logistics optimization system
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 *   **Backend:** Node.js, Express, MongoDB (Mongoose)
 *   **Frontend:** React (Vite/CRA), Leaflet.js (for maps), Axios, TailwindCSS / Vanilla CSS
@@ -26,7 +26,7 @@ SmartRoute is a full-stack delivery management and logistics optimization system
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 MAJORPROJECT/
@@ -55,13 +55,13 @@ MAJORPROJECT/
 
 ---
 
-## 💻 Quick Setup
+##  Quick Setup
 
 ### 1. Prerequisites
 Make sure you have [Node.js](https://nodejs.org) and [MongoDB](https://www.mongodb.com/) installed and running.
 
 ### 2. Backend Setup
-Navigate to the backend directory, configure environment variables, seed database with default partners, and start the development server:
+
 
 ```bash
 cd backend
@@ -69,26 +69,22 @@ npm install
 
 # Copy environment variables file and configure your MONGO_URI and JWT_SECRET
 cp .env.example .env
-
-# Populate the database with test partners and manager accounts
 npm run seed
-
-# Run the backend API server (runs on http://localhost:5000)
 npm run dev
 ```
 
 ### 3. Frontend Setup
-Navigate to the frontend directory, install packages, and start the client application:
+
 
 ```bash
 cd ../frontend
 npm install
-npm start  # Launches app on http://localhost:3000
+npm start  
 ```
 
 ---
 
-## 🔑 Test Credentials & Flow
+##  Test Credentials & Flow
 
 ### Default Accounts
 *   **Manager:** `manager@test.com` / `password`
