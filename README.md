@@ -77,7 +77,7 @@ npm run dev
 
 
 ```bash
-cd ../frontend
+cd frontend
 npm install
 npm start  
 ```
@@ -99,7 +99,7 @@ npm start
 
 ---
 
-## 🔗 Key API Endpoints
+##  Key API Endpoints
 
 ### Manager Actions
 *   `POST /api/deliveries/create` - Create a delivery and auto-assign nearest partner.
