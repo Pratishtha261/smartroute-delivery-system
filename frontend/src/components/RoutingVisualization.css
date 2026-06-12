@@ -1,0 +1,62 @@
+.routing-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.routing-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.routing-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  background: #eee;
+}
+
+.tab-button.active {
+  background: #007bff;
+  color: white;
+}
+
+.input-section {
+  margin-bottom: 20px;
+}
+
+.coord-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.results-section {
+  margin-top: 20px;
+}
+
+.algorithm-result {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+}

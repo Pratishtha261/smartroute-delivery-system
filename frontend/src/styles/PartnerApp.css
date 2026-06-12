@@ -1,0 +1,323 @@
+.partner-dashboard {
+  background-color: #0f172a;
+  color: #f8fafc;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.partner-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: #1e293b;
+  border-bottom: 1px solid #334155;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo {
+  font-size: 24px;
+}
+
+.nav-brand h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.nav-stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat-badge {
+  background-color: #334155;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-active {
+  background-color: #064e3b;
+  color: #34d399;
+}
+
+.partner-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 73px);
+}
+
+.partner-sidebar {
+  width: 380px;
+  background-color: #1e293b;
+  border-right: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* Earnings Section */
+.earnings-section {
+  padding: 24px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-bottom: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.earnings-header {
+  font-size: 0.9rem;
+  color: #bfdbfe;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.earnings-amount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+.earnings-stats {
+  font-size: 0.85rem;
+  color: #93c5fd;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.sidebar-header {
+  padding: 20px 20px 10px 20px;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #cbd5e1;
+}
+
+.deliveries-list {
+  flex: 1;
+  padding: 10px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.no-deliveries {
+  padding: 20px;
+  color: #94a3b8;
+  text-align: center;
+  background: #334155;
+  border-radius: 12px;
+}
+
+.delivery-card {
+  background-color: #334155;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.delivery-card:hover {
+  transform: translateY(-2px);
+  background-color: #475569;
+}
+
+.delivery-card.selected {
+  border-color: #3b82f6;
+  background-color: #1e293b;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background-color: #475569;
+}
+
+.status-pending, .status-assigned { background-color: #fef08a; color: #854d0e; }
+.status-accepted { background-color: #bfdbfe; color: #1e40af; }
+.status-picked_up { background-color: #fbcfe8; color: #be185d; }
+.status-in_transit { background-color: #a7f3d0; color: #065f46; }
+.status-delivered { background-color: #86efac; color: #14532d; }
+
+.card-body p {
+  margin: 6px 0;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-body strong {
+  color: #cbd5e1;
+}
+
+.card-actions-inline {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.btn-small {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #fff;
+}
+.btn-small.accept { background-color: #10b981; }
+.btn-small.reject { background-color: #ef4444; }
+
+.partner-map-area {
+  flex: 1;
+  position: relative;
+  background-color: #0f172a;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+}
+
+.delivery-details-panel {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  right: 30px;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  border: 1px solid #334155;
+  z-index: 1000;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #f8fafc;
+}
+
+.delivery-id {
+  color: #64748b;
+  font-family: monospace;
+}
+
+.panel-stats {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 16px;
+}
+
+.panel-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-stat span {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.panel-stat strong {
+  font-size: 1.25rem;
+  color: #f1f5f9;
+}
+
+.panel-address {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #475569;
+}
+
+.panel-address p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.panel-address strong {
+  color: #94a3b8;
+  display: inline-block;
+  width: 60px;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  color: #fff;
+}
+
+.btn:hover { opacity: 0.9; }
+.btn:active { transform: scale(0.98); }
+
+.btn-picked { background-color: #3b82f6; }
+.btn-transit { background-color: #10b981; }
+.btn-delivered { background-color: #f59e0b; }
+
+/* Custom Leaflet Dark Mode Tiles */
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}

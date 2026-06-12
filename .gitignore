@@ -1,0 +1,35 @@
+# Node modules
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Production build directories
+build/
+dist/
+frontend/build/
+frontend/dist/
+
+# Environment files (sensitive credentials)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env
+
+# Log files
+*.log
+backend/backend-error.txt
+backend/backend-output.txt
+backend/seed-output.txt
+backend/seed.log
+backend/server-output.txt
+frontend/frontend-error.txt
+frontend/frontend-output.txt
+
+# System/IDE files
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
